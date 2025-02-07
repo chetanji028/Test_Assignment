@@ -1,35 +1,58 @@
 const asyncHandler = require("express-async-handler");
-const { getAllStudents, addNewStudent, getStudentDetail, setStudentStatus, updateStudent } = require("./students-service");
+const {
+    getAllStudents,
+    addNewStudent,
+    getStudentDetail,
+    setStudentStatus,
+    updateStudent,
+    deleteStudent
+} = require("./students-service");
 
+// Get all students
 const handleGetAllStudents = asyncHandler(async (req, res) => {
-    //write your code
-
+    const students = await getAllStudents();
+    res.status(200).json(students);
 });
 
+// Add a new student
 const handleAddStudent = asyncHandler(async (req, res) => {
-    //write your code
-
+    const student = await addNewStudent(req.body);
+    res.status(201).json(student);
 });
 
-const handleUpdateStudent = asyncHandler(async (req, res) => {
-    //write your code
-
-});
-
+// Get student by ID
 const handleGetStudentDetail = asyncHandler(async (req, res) => {
-    //write your code
-
+    const student = await getStudentDetail(req.params.id);
+    if (!student) {
+        res.status(404);
+        throw new Error("Student not found");
+    }
+    res.status(200).json(student);
 });
 
-const handleStudentStatus = asyncHandler(async (req, res) => {
-    //write your code
+// Update student details
+const handleUpdateStudent = asyncHandler(async (req, res) => {
+    const updatedStudent = await updateStudent(req.params.id, req.body);
+    res.status(200).json(updatedStudent);
+});
 
+// Change student status
+const handleStudentStatus = asyncHandler(async (req, res) => {
+    const updatedStatus = await setStudentStatus(req.params.id, req.body.status);
+    res.status(200).json(updatedStatus);
+});
+
+// Delete a student
+const handleDeleteStudent = asyncHandler(async (req, res) => {
+    await deleteStudent(req.params.id);
+    res.status(204).json({ message: "Student deleted successfully" });
 });
 
 module.exports = {
     handleGetAllStudents,
     handleGetStudentDetail,
     handleAddStudent,
-    handleStudentStatus,
     handleUpdateStudent,
+    handleStudentStatus,
+    handleDeleteStudent,
 };
